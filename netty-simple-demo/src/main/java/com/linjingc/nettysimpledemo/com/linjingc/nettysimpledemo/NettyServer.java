@@ -70,10 +70,13 @@ public class NettyServer {
 			);
 			//启动netty服务
 			serverBootstrap.bind(8000);
-		} finally {
+//			serverBootstrap.bind(8000).sync().channel();
+		}catch (Exception e){
+			e.printStackTrace();
+		}finally {
 			// 释放线程池资源
-			//boos.shutdownGracefully();
-			//worker.shutdownGracefully();
+//			boos.shutdownGracefully();
+//			worker.shutdownGracefully();
 		}
 	}
 

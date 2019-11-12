@@ -12,8 +12,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class NettyServer {
 
@@ -54,7 +56,13 @@ public class NettyServer {
 					                             //LineBasedFrameDecoder + StringDecoder 就是一个按行切换的文本解码器。
 					                             nioSocketChannel.pipeline().addLast(new StringDecoder());
 					                             nioSocketChannel.pipeline().addLast(new StringEncoder());
-//
+
+									            //发送消息频率。单位秒。此设置是60秒发送一次消息
+					                             //readerIdleTime为读超时时间（即测试端一定时间内未接受到被测试端消息）
+					                             //writerIdleTime为写超时时间（即测试端一定时间内向被测试端发送消息）
+					                             //allIdleTime：所有类型的超时时间
+					                             nioSocketChannel.pipeline().addLast(new IdleStateHandler(60, 60, 60, TimeUnit.SECONDS));
+
 					                             //接受客户端消息
 					                             nioSocketChannel.pipeline().addLast(new SimpleChannelInboundHandler<String>() {
 						                             @Override

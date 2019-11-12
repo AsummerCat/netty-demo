@@ -2,10 +2,7 @@ package com.linjingc.nettysimpledemo;
 
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -19,10 +16,16 @@ import java.util.concurrent.TimeUnit;
 
 public class NettyServer {
 
-	//连接客户端
+	/**
+	 * 连接客户端
+	 */
 	public static ConcurrentHashMap<String, ChannelHandlerContext> map = new ConcurrentHashMap<String, ChannelHandlerContext>();
+	private static ChannelFuture serverChannelFuture;
+
+
 
 	public static void main(String[] args) {
+
 		ServerBootstrap serverBootstrap = new ServerBootstrap();
 
 		//接收客户端连接
@@ -78,13 +81,12 @@ public class NettyServer {
 			);
 			//启动netty服务
 			serverBootstrap.bind(8000);
-//			serverBootstrap.bind(8000).sync().channel();
+			serverChannelFuture= serverBootstrap.bind(8000).sync();
 		}catch (Exception e){
-			e.printStackTrace();
-		}finally {
 			// 释放线程池资源
-//			boos.shutdownGracefully();
-//			worker.shutdownGracefully();
+			boos.shutdownGracefully();
+			worker.shutdownGracefully();
+			e.printStackTrace();
 		}
 	}
 

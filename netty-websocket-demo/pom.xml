@@ -9,36 +9,22 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.linjingc</groupId>
-    <artifactId>netty-demo</artifactId>
+    <artifactId>netty-websocket-demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>netty-demo</name>
-    <description>Demo project for Spring Boot</description>
+    <name>netty-websocket-demo</name>
+    <description>netty整合websocket</description>
 
-    <modules>
-        <module>netty-simple-demo</module>
-        <module>netty-websocket-demo</module>
-    </modules>
     <properties>
         <java.version>1.8</java.version>
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.1.43.Final</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

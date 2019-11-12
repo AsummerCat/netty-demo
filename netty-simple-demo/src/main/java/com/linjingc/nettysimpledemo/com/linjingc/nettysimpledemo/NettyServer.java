@@ -36,6 +36,8 @@ public class NettyServer {
 			serverBootstrap.channel(NioServerSocketChannel.class);
 			// 2小时无数据激活心跳机制
 			serverBootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+			//指定此套接口排队的最大连接个数
+			serverBootstrap.option(ChannelOption.SO_BACKLOG, 1024);
 			//来监听已经连接的客户端的Channel的动作和状态。
 			serverBootstrap.childHandler(new ChannelInitializer<NioSocketChannel>() {
 

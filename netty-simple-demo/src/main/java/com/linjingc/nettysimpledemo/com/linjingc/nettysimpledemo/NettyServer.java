@@ -9,12 +9,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class NettyServer {
@@ -50,7 +47,7 @@ public class NettyServer {
                                 支持携带结束符和不带结束符两种解码方式，同时支持配置单行的最大长度，
                                 如果读到了最大长度之后仍然没有发现换行符，则抛出异常，同时忽略掉之前读到的异常码流
 					              */
-					                         //    nioSocketChannel.pipeline().addLast(new LineBasedFrameDecoder(10010));
+					                             //    nioSocketChannel.pipeline().addLast(new LineBasedFrameDecoder(10010));
 
 					                             //字符串解码和编码
 					                             //LineBasedFrameDecoder + StringDecoder 就是一个按行切换的文本解码器。
@@ -87,7 +84,7 @@ public class NettyServer {
 		//*****回复*********
 		//1.判断客户端是否在线
 		ChannelHandlerContext client = map.get(msg);
-		if(client==null){
+		if (client == null) {
 			return;
 		}
 		//2.回复客户端

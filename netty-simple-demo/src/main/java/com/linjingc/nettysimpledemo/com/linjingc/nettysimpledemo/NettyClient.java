@@ -33,7 +33,7 @@ public class NettyClient {
 						channel.pipeline().addLast(new SimpleChannelInboundHandler<String>() {
 							@Override
 							protected void channelRead0(ChannelHandlerContext channelHandlerContext, String msg) throws Exception {
-								System.out.println("客户端收到消息了"+msg);
+								System.out.println("客户端收到消息了" + msg);
 							}
 
 

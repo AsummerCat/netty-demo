@@ -44,7 +44,7 @@ public class NettyClient {
 		//客户端连接
 		Channel channel = bootstrap.connect("127.0.0.1", 8000).channel();
 		while (true) {
-			channel.writeAndFlush(new Date() + ":hello world");
+			channel.writeAndFlush(new Date() + ":hello world\n");
 			Thread.sleep(2000);
 		}
 

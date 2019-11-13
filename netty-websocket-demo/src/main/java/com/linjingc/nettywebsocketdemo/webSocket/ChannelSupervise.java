@@ -10,9 +10,13 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * 管道消息新增清除 及其群发
+ */
 public class ChannelSupervise {
     private   static ChannelGroup GlobalGroup=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private  static ConcurrentMap<String, ChannelId> ChannelMap=new ConcurrentHashMap();
+
     public  static void addChannel(Channel channel){
         GlobalGroup.add(channel);
         ChannelMap.put(channel.id().asShortText(),channel.id());

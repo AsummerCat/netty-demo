@@ -17,6 +17,10 @@ import java.util.Date;
 
 import static io.netty.handler.codec.http.HttpUtil.isKeepAlive;
 
+/**
+ * 初始化NioWebSocketHandler
+ * Netty服务器HTTP请求处理器
+ */
 public class NioWebSocketHandler extends SimpleChannelInboundHandler<Object> {
 
 

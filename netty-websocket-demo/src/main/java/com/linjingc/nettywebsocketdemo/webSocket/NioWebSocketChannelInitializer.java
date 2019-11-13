@@ -7,11 +7,25 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
- *  Netty服务器处理链
+ * Netty服务器处理链
  */
+@Component
+@Qualifier("nioWebSocketChannelInitializer")
 public class NioWebSocketChannelInitializer extends ChannelInitializer<SocketChannel> {
+	@Autowired
+	private NioWebSocketHandler webSocketServerHandler;
+	@Autowired
+	private NioHttpAndWebSocketHandler httpRequestHandler;
+
+
+
 	@Override
 	protected void initChannel(SocketChannel ch) {
 		//设置log监听器，并且日志级别为debug，方便观察运行流程
@@ -24,8 +38,15 @@ public class NioWebSocketChannelInitializer extends ChannelInitializer<SocketCha
 		ch.pipeline().addLast("http-chunked", new ChunkedWriteHandler());
 		//用于处理websocket, /ws为访问websocket时的uri
 		ch.pipeline().addLast(new WebSocketServerProtocolHandler("/ws"));
-		//自定义的业务handler
-		ch.pipeline().addLast("handler", new NioWebSocketHandler());
+		//自定义的业务handler 这种转发Http请求变为WwbSocket请求
+		ch.pipeline().addLast("http-handler", httpRequestHandler);
+		//自定义的业务handler 这种针对WwbSocket请求
+		ch.pipeline().addLast("websocket-handler", webSocketServerHandler);
+//
+//		//自定义的业务handler 这种转发Http请求变为WwbSocket请求
+//		ch.pipeline().addLast("http-handler", new NioHttpAndWebSocketHandler());
+//		//自定义的业务handler 这种针对WwbSocket请求
+//		ch.pipeline().addLast("websocket-handler", new NioWebSocketHandler());
 	}
 }
 

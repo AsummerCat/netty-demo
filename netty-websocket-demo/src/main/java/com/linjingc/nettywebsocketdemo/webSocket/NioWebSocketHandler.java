@@ -1,41 +1,43 @@
 package com.linjingc.nettywebsocketdemo.webSocket;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.websocketx.*;
-import io.netty.util.CharsetUtil;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-import static io.netty.handler.codec.http.HttpUtil.isKeepAlive;
-
 /**
  * 初始化NioWebSocketHandler
- * Netty服务器HTTP请求处理器
+ * Netty服务器HTTP请求处理器 针对websocket
+ *
+ * @author Administrator
  */
-public class NioWebSocketHandler extends SimpleChannelInboundHandler<Object> {
+@Component()
+@Qualifier("nioWebSocketHandler")
+@ChannelHandler.Sharable
+public class NioWebSocketHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
 
 	private WebSocketServerHandshaker handshaker;
 
+
+
+
+
+
+
+	/**
+	 * 描述：读取完连接的消息后，对消息进行处理。
+	 * 这里主要是处理WebSocket请求
+	 */
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+	protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) throws Exception {
 		System.out.println("收到消息：" + msg);
-		if (msg instanceof FullHttpRequest) {
-			//以http请求形式接入，但是走的是websocket
-			handleHttpRequest(ctx, (FullHttpRequest) msg);
-		} else if (msg instanceof WebSocketFrame) {
-			//处理websocket客户端的消息
-			handlerWebSocketFrame(ctx, (WebSocketFrame) msg);
-		}
+		//处理websocket客户端的消息
+		handlerWebSocketFrame(ctx, msg);
 	}
 
 	@Override
@@ -84,48 +86,5 @@ public class NioWebSocketHandler extends SimpleChannelInboundHandler<Object> {
 		ChannelSupervise.send2All(tws);
 		// 返回【谁发的发给谁】
 		// ctx.channel().writeAndFlush(tws);
-	}
-
-	/**
-	 * 唯一的一次http请求，用于创建websocket
-	 */
-	private void handleHttpRequest(ChannelHandlerContext ctx,
-	                               FullHttpRequest req) {
-		//要求Upgrade为websocket，过滤掉get/Post
-		if (!req.decoderResult().isSuccess()
-				|| (!"websocket".equals(req.headers().get("Upgrade")))) {
-			//若不是websocket方式，则创建BAD_REQUEST的req，返回给客户端
-			sendHttpResponse(ctx, req, new DefaultFullHttpResponse(
-					HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
-			return;
-		}
-		WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
-				"ws://192.168.240.129:8082/websocket", null, false);
-		handshaker = wsFactory.newHandshaker(req);
-		if (handshaker == null) {
-			WebSocketServerHandshakerFactory
-					.sendUnsupportedVersionResponse(ctx.channel());
-		} else {
-			handshaker.handshake(ctx.channel(), req);
-		}
-	}
-
-	/**
-	 * 拒绝不合法的请求，并返回错误信息
-	 */
-	private static void sendHttpResponse(ChannelHandlerContext ctx,
-	                                     FullHttpRequest req, DefaultFullHttpResponse res) {
-		// 返回应答给客户端
-		if (res.status().code() != 200) {
-			ByteBuf buf = Unpooled.copiedBuffer(res.status().toString(),
-					CharsetUtil.UTF_8);
-			res.content().writeBytes(buf);
-			buf.release();
-		}
-		ChannelFuture f = ctx.channel().writeAndFlush(res);
-		// 如果是非Keep-Alive，关闭连接
-		if (!isKeepAlive(req) || res.status().code() != 200) {
-			f.addListener(ChannelFutureListener.CLOSE);
-		}
 	}
 }

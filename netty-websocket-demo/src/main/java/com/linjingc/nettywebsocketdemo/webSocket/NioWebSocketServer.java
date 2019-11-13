@@ -21,7 +21,7 @@ public class NioWebSocketServer {
 			bootstrap.channel(NioServerSocketChannel.class);
 			//自定义业务handler
 			bootstrap.childHandler(new NioWebSocketChannelInitializer());
-			Channel channel = bootstrap.bind(8081).sync().channel();
+			Channel channel = bootstrap.bind(8082).sync().channel();
 			System.out.println("webSocket服务器启动成功");
 			channel.closeFuture().sync();
 		} catch (InterruptedException e) {

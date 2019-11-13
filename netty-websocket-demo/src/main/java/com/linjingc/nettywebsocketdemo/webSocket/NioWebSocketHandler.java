@@ -1,4 +1,4 @@
-package com.linjingc.nettywebsocketdemo;
+package com.linjingc.nettywebsocketdemo.webSocket;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

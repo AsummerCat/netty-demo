@@ -1,4 +1,4 @@
-package com.linjingc.nettywebsocketdemo;
+package com.linjingc.nettywebsocketdemo.webSocket;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -17,3 +17,4 @@ public class NioWebSocketChannelInitializer extends ChannelInitializer<SocketCha
         ch.pipeline().addLast("handler",new NioWebSocketHandler());//自定义的业务handler
     }
 }
+

@@ -1,4 +1,4 @@
-package com.linjingc.nettywebsocketdemo;
+package com.linjingc.nettywebsocketdemo.webSocket;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;

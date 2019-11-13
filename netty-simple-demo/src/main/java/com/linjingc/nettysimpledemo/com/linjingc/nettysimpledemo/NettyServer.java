@@ -3,6 +3,8 @@ package com.linjingc.nettysimpledemo;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -10,7 +12,9 @@ import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.GlobalEventExecutor;
 
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -20,6 +24,10 @@ public class NettyServer {
 	 * 连接客户端
 	 */
 	public static ConcurrentHashMap<String, ChannelHandlerContext> map = new ConcurrentHashMap<String, ChannelHandlerContext>();
+	/**
+	 * 维护连接上的客户端
+	 */
+	private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 	private static ChannelFuture serverChannelFuture;
 
 
@@ -68,19 +76,44 @@ public class NettyServer {
 
 					                             //接受客户端消息
 					                             nioSocketChannel.pipeline().addLast(new SimpleChannelInboundHandler<String>() {
+						                             /**
+						                              * 读取客户端消息
+						                              */
 						                             @Override
 						                             protected void channelRead0(ChannelHandlerContext channelHandlerContext, String msg) throws Exception {
-							                             System.out.println(msg);
+						                             	System.out.println(msg);
 							                             map.put(msg, channelHandlerContext);
 							                             //回复
 							                             NettyServer.sendMessageClient(msg);
+						                             }
+
+						                             /**
+						                              * 服务端监听到客户端活动
+						                              */
+						                             @Override
+						                             public void channelActive(ChannelHandlerContext ctx) throws Exception {
+							                             //移除全局用户中的这个人
+							                             channelGroup.add(ctx.channel());
+							                             System.out.println(ctx.channel().localAddress().toString()+"已经成功连接");
+							                             //发送全体广播
+							                             sendAllMessage();
+						                             }
+
+						                             /**
+						                              * 服务端监听到客户端不活动
+						                              */
+						                             @Override
+						                             public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+							                             //移除全局用户中的这个人
+							                             channelGroup.remove(ctx.channel());
+							                             System.out.println(ctx.channel().localAddress().toString()+"已经断开");
 						                             }
 					                             });
 				                             }
 			                             }
 			);
 			//启动netty服务
-			serverBootstrap.bind(8000);
+//			serverBootstrap.bind(8000);
 			serverChannelFuture= serverBootstrap.bind(8000).sync();
 		}catch (Exception e){
 			// 释放线程池资源
@@ -107,5 +140,12 @@ public class NettyServer {
 		}
 		client.channel().writeAndFlush("嘿嘿 你来了");
 		//*****回复*********
+	}
+
+	/**
+	 * 群发广播
+	 */
+	public static void sendAllMessage(){
+		channelGroup.writeAndFlush("新用户登录了"+new Date());
 	}
 }

@@ -9,7 +9,6 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +26,7 @@ import static io.netty.handler.codec.http.HttpUtil.isKeepAlive;
 public class NioHttpAndWebSocketHandler extends SimpleChannelInboundHandler<Object> {
 
 	private WebSocketServerHandshaker handshaker;
+
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 		System.out.println("收到消息：" + msg);
@@ -93,8 +93,7 @@ public class NioHttpAndWebSocketHandler extends SimpleChannelInboundHandler<Obje
 	private void handleHttpRequest(ChannelHandlerContext ctx,
 	                               FullHttpRequest req) {
 		//要求Upgrade为websocket，过滤掉get/Post
-		if (!req.decoderResult().isSuccess()
-				|| (!"websocket".equals(req.headers().get("Upgrade")))) {
+		if (!req.decoderResult().isSuccess() || (!"websocket".equals(req.headers().get("Upgrade")))) {
 			//若不是websocket方式，则创建BAD_REQUEST的req，返回给客户端
 			sendHttpResponse(ctx, req, new DefaultFullHttpResponse(
 					HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));

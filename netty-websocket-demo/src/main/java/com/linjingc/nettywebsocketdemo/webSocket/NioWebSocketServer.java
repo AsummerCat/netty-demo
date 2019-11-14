@@ -5,7 +5,6 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,13 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class NioWebSocketServer {
 	private Integer port = 8082;
-
-	private  NioWebSocketChannelInitializer nioWebSocketChannelInitializer;
-
-	public NioWebSocketServer() {
-		this.nioWebSocketChannelInitializer = SpringContextUtil.getBean("nioWebSocketChannelInitializer");
-	}
-
 
 	private void init() {
 		System.out.println("正在启动websocket服务器");
@@ -32,7 +24,7 @@ public class NioWebSocketServer {
 			bootstrap.group(boss, work);
 			bootstrap.channel(NioServerSocketChannel.class);
 			//自定义业务handler
-			bootstrap.childHandler(nioWebSocketChannelInitializer);
+			bootstrap.childHandler(SpringContextUtil.getBean("nioWebSocketChannelInitializer"));
 			Channel channel = bootstrap.bind(port).sync().channel();
 			System.out.println("webSocket服务器启动成功");
 			long end = System.currentTimeMillis();

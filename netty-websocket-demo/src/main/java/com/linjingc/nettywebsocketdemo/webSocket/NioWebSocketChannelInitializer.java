@@ -20,8 +20,6 @@ public class NioWebSocketChannelInitializer extends ChannelInitializer<SocketCha
 
 	@Autowired
 	private NioHttpAndWebSocketHandler httpRequestHandler;
-	@Autowired
-	private yuyuyuy yuyuyuy;
 
 
 	@Override
